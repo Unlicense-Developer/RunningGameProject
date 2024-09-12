@@ -9,13 +9,20 @@ AMyPlayer::AMyPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpeedPower = 100.0f;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SpeedPower = 500.0f;
+	GetCharacterMovement()->JumpZVelocity = 500.0f;
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->AddLocalOffset(FVector(0.0f, 0.0f, -38.0f));
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeAsset(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
+
+	if (CubeAsset.Succeeded())
+	{
+		StaticMeshComponent->SetStaticMesh(CubeAsset.Object);
+	}
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
@@ -24,17 +31,21 @@ AMyPlayer::AMyPlayer()
 	SpringArmComponent->CameraLagSpeed = 3.0f;
 
 
-	MyCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	MyCamera->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
-	//MyCamera->SetRelativeLocation(FVector(-270.0f, 0.0f, 220.0f));
-	//MyCamera->SetRelativeRotation(FRotator(-30.0f, 0.0f, 0.0f));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SkeltalMeshAsset(TEXT("/Engine/Tutorial/SubEditors/TutorialAssets/Character/TutorialTPP.TutorialTPP"));
+	if (SkeltalMeshAsset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(SkeltalMeshAsset.Object);
+		GetMesh()->AddLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
+	}
 }
 
 // Called when the game starts or when spawned
 void AMyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -49,6 +60,8 @@ void AMyPlayer::Tick(float DeltaTime)
 void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	InputComponent->BindAction("Jump", IE_Pressed, this, &AMyPlayer::Jump);
 
 	InputComponent->BindAxis("MoveX", this, &AMyPlayer::SetVelocityX);
 	InputComponent->BindAxis("MoveY", this, &AMyPlayer::SetVelocityY);
@@ -66,14 +79,14 @@ void AMyPlayer::CameraRotate()
 	{
 		FRotator NewRotation = GetActorRotation();
 		NewRotation.Yaw += CameraInputValue.X;
-		NewRotation.Pitch += CameraInputValue.Y;
 		SetActorRotation(NewRotation);
 	}
 
 	{
-		/*FRotator NewRotation = SpringArmComponent->GetComponentRotation();
+		FRotator NewRotation = SpringArmComponent->GetComponentRotation();
+		NewRotation.Pitch = NewRotation.Pitch + CameraInputValue.Y;
 		NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + CameraInputValue.Y, -80.0f, -15.0f);
-		SpringArmComponent->SetWorldRotation(NewRotation);*/
+		SpringArmComponent->SetWorldRotation(NewRotation);
 	}
 }
 

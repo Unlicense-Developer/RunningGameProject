@@ -2,11 +2,16 @@
 
 
 #include "RunningGameMode.h"
+#include "MyPlayer.h"
+
+ARunningGameMode::ARunningGameMode()
+{
+    static ConstructorHelpers::FClassFinder<AMyPlayer> MyPlayerClass(TEXT("/Script/RunningGameProject.MyPlayer"));
+    DefaultPawnClass = MyPlayerClass.Class;
+}
 
 void ARunningGameMode::StartPlay()
 {
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hello World! MK1"));
-    }
+    Super::StartPlay();
+
 }

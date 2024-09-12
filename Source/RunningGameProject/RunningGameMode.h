@@ -13,6 +13,10 @@ UCLASS()
 class RUNNINGGAMEPROJECT_API ARunningGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ARunningGameMode();
+
 	
 public:
 	virtual void StartPlay() override;
