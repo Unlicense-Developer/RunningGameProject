@@ -12,11 +12,12 @@ AGoal::AGoal()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> FloorAsset(TEXT("/Game/SM_Portal.SM_Portal"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/SM_Portal.SM_Portal"));
 
-	if (FloorAsset.Succeeded())
+	if (MeshAsset.Succeeded())
 	{
-		StaticMesh->SetStaticMesh(FloorAsset.Object);
+		StaticMesh->SetStaticMesh(MeshAsset.Object);
+		StaticMesh->SetCollisionProfileName(TEXT("OverlapAll"));
 	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> Material(TEXT("/Game/DiscMaterial.DiscMaterial"));
@@ -36,10 +37,16 @@ void AGoal::BeginPlay()
 	
 }
 
+void AGoal::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Notify Actor Begin Overlap... Other Actor Name: %s"), *OtherActor->GetName()));
+}
+
 // Called every frame
 void AGoal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
 }
 

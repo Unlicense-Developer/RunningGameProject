@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "BaseActor.h"
 #include "Materials/Material.h"
 #include "Components/StaticMeshComponent.h"
 #include "Goal.generated.h"
 
 UCLASS()
-class RUNNINGGAMEPROJECT_API AGoal : public AActor
+class RUNNINGGAMEPROJECT_API AGoal : public ABaseActor
 {
 	GENERATED_BODY()
 	
@@ -21,12 +21,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public:
-	UStaticMeshComponent* StaticMesh;
-
-	UMaterialInstance* MaterialInst;
+	
 };

@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseActor.h"
+#include "GameFramework/Actor.h"
 #include "Materials/Material.h"
 #include "Components/StaticMeshComponent.h"
-#include "Floor.generated.h"
+#include "BaseActor.generated.h"
 
 UCLASS()
-class RUNNINGGAMEPROJECT_API AFloor : public ABaseActor
+class RUNNINGGAMEPROJECT_API ABaseActor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AFloor();
+	ABaseActor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,4 +24,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+public:
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	UMaterialInstance* MaterialInst;
 };

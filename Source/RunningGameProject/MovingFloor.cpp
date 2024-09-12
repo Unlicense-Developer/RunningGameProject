@@ -6,14 +6,14 @@
 AMovingFloor::AMovingFloor()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SpeedPower = 8.0f;
-	MoveRange = 600.0f;
 }
 
 void AMovingFloor::BeginPlay()
 {
 	Super::BeginPlay();
 	InitialPosition = GetActorLocation();
+	SpeedPower = FMath::RandRange(5.0f, 10.0f);
+	MoveRange = FMath::RandRange(400.0f, 700.0f);
 }
 
 void AMovingFloor::Tick(float DeltaTime)
