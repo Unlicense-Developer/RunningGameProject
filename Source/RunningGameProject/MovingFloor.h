@@ -37,7 +37,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	FVector InitialPosition;
 
-	bool IsReverseDirection = false;
+	UPROPERTY(EditAnywhere)
 	float SpeedPower;
+
+	UPROPERTY(EditAnywhere)
 	float MoveRange;
+
+	bool IsReverseDirection = false;
 };

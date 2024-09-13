@@ -8,7 +8,8 @@ ARunningGameMode::ARunningGameMode()
     DefaultPawnClass = MyPlayerClass.Class;
     static ConstructorHelpers::FClassFinder<AMyPlayerController> MyPlayerControllerClass(TEXT("/Script/RunningGameProject.MyPlayerController"));
     PlayerControllerClass = MyPlayerControllerClass.Class;
-
+    static ConstructorHelpers::FClassFinder<UUserWidget> UserWidgetClass(TEXT("/Game/BP_PlayerWidget"));
+    StartingWidgetClass = UserWidgetClass.Class;
 }
 
 void ARunningGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
@@ -30,10 +31,16 @@ void ARunningGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
     }
 }
 
+void ARunningGameMode::StartGame()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Start Game")));
+    //UGameplayStatics::OpenLevel(this, FName::ToString(TEXT("SS")));
+}
+
 void ARunningGameMode::BeginPlay()
 {
     Super::BeginPlay();
-    //ChangeMenuWidget(StartingWidgetClass);
+    ChangeMenuWidget(StartingWidgetClass);
 }
 
 void ARunningGameMode::StartPlay()

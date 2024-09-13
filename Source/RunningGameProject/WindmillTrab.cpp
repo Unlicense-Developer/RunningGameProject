@@ -1,19 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Floor.h"
+#include "WindmillTrab.h"
 
-// Sets default values
-AFloor::AFloor()
+AWindmillTrab::AWindmillTrab()
 {
+	SpeedPower = 2.0f;
+
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> FloorAsset(TEXT("/Game/SM_FloorMesh.SM_FloorMesh"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/SM_SM_WindmillTrab.SM_SM_WindmillTrab"));
 
-	if (FloorAsset.Succeeded())
+	if (MeshAsset.Succeeded())
 	{
-		StaticMesh->SetStaticMesh(FloorAsset.Object);
+		StaticMesh->SetStaticMesh(MeshAsset.Object);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> WoodFloorMaterial(TEXT("/Game/Megascans/Surfaces/Wooden_Floor_wdipfjw/MI_Wooden_Floor_wdipfjw_2K.MI_Wooden_Floor_wdipfjw_2K"));
@@ -26,16 +27,9 @@ AFloor::AFloor()
 	StaticMesh->SetMaterial(0, MaterialInst);
 }
 
-// Called when the game starts or when spawned
-void AFloor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void AFloor::Tick(float DeltaTime)
+void AWindmillTrab::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	AddActorWorldRotation(FRotator(0.0f, SpeedPower, 0.0f));
 }
-
