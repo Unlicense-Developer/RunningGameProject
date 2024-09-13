@@ -37,13 +37,10 @@ public:
 	void SetCameraYaw(float AxisValue);
 
 public:
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* StaticMeshComponent;
-
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	UCameraComponent* Camera;
 
 	FVector CurVelocity;

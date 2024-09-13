@@ -13,17 +13,6 @@ AMyPlayer::AMyPlayer()
 	SpeedPower = 500.0f;
 	GetCharacterMovement()->JumpZVelocity = 500.0f;
 
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMeshComponent->SetupAttachment(RootComponent);
-	StaticMeshComponent->AddLocalOffset(FVector(0.0f, 0.0f, -38.0f));
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeAsset(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
-
-	if (CubeAsset.Succeeded())
-	{
-		StaticMeshComponent->SetStaticMesh(CubeAsset.Object);
-	}
-
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
 	SpringArmComponent->TargetArmLength = 400.0f;
@@ -34,10 +23,11 @@ AMyPlayer::AMyPlayer()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SkeltalMeshAsset(TEXT("/Engine/Tutorial/SubEditors/TutorialAssets/Character/TutorialTPP.TutorialTPP"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SkeltalMeshAsset(TEXT("/Game/Player/Paladin_J_Nordstrom.Paladin_J_Nordstrom"));
 	if (SkeltalMeshAsset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SkeltalMeshAsset.Object);
+		GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, -90.0f));
 		GetMesh()->AddLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
 	}
 }

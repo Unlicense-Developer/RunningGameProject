@@ -34,7 +34,7 @@ void ARunningGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
 void ARunningGameMode::StartGame()
 {
     GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Start Game")));
-    //UGameplayStatics::OpenLevel(this, FName::ToString(TEXT("SS")));
+    UGameplayStatics::OpenLevel(this, FName(TEXT("TestLevel")));
 }
 
 void ARunningGameMode::BeginPlay()

@@ -15,6 +15,7 @@ AWindmillTrab::AWindmillTrab()
 	if (MeshAsset.Succeeded())
 	{
 		StaticMesh->SetStaticMesh(MeshAsset.Object);
+		StaticMesh->SetCollisionProfileName(TEXT("Obstacle"));
 	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> WoodFloorMaterial(TEXT("/Game/Megascans/Surfaces/Wooden_Floor_wdipfjw/MI_Wooden_Floor_wdipfjw_2K.MI_Wooden_Floor_wdipfjw_2K"));
