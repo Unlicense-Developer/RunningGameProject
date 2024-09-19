@@ -30,6 +30,13 @@ AMyPlayer::AMyPlayer()
 		GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, -90.0f));
 		GetMesh()->AddLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
 	}
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstance(TEXT("/Game/ABP_Player.ABP_Player_C"));
+
+	if (AnimInstance.Class)
+	{
+		GetMesh()->SetAnimInstanceClass(AnimInstance.Class);
+	}
 }
 
 // Called when the game starts or when spawned
