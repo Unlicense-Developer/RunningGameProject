@@ -1,6 +1,7 @@
 #include "RunningGameMode.h"
 #include "MyPlayer.h"
 #include "MyPlayerController.h"
+#include "BGMManager.h"
 
 ARunningGameMode::ARunningGameMode()
 {
@@ -41,6 +42,8 @@ void ARunningGameMode::BeginPlay()
 {
     Super::BeginPlay();
     ChangeMenuWidget(StartingWidgetClass);
+
+    GetWorld()->SpawnActor<ABGMManager>();
 }
 
 void ARunningGameMode::StartPlay()

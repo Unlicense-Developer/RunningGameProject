@@ -9,5 +9,12 @@ void AMyPlayerController::BeginPlay()
 
 	SetInputMode(FInputModeGameAndUI());
 
-	//bShowMouseCursor = true;
+	if (GetWorld()->GetName() == FString(TEXT("StartLevel")))
+	{
+		bShowMouseCursor = true;
+	}
+	else
+	{
+		bShowMouseCursor = false;
+	}
 }
