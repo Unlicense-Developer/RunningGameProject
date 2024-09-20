@@ -39,8 +39,10 @@ void AStartMenuGameMode::ChangeWidget(TSubclassOf<UUserWidget> NewWidgetClass)
 
 void AStartMenuGameMode::StartGame()
 {
+    UGameplayStatics::OpenLevel(this, FName(TEXT("GameLevel")));
 }
 
 void AStartMenuGameMode::QuitGame()
 {
+    UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, true);
 }

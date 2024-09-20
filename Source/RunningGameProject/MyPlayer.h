@@ -1,16 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFrameWork/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "InputActionValue.h"
 #include "MyPlayer.generated.h"
 
 UCLASS()
@@ -28,13 +28,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	void Move(float DeltaTime);
-	void CameraRotate();
 
-	void SetVelocityX(float AxisValue);
-	void SetVelocityY(float AxisValue);
-	void SetCameraPitch(float AxisValue);
-	void SetCameraYaw(float AxisValue);
+	UFUNCTION()
+	void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+		const FHitResult& Hit);
+
+	void Hit();
+
+protected:
+	void Look(const FInputActionValue& Value);
+	void Move(const FInputActionValue& Value);
+	void StopMove();
+	virtual void NotifyActorBeginOverlap(AActor* Other) override;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -42,9 +48,22 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* Camera;
-
-	FVector CurVelocity;
+	
+	UPROPERTY(VisibleAnywhere)
 	FVector CameraInputValue;
-	float SpeedPower = 0;
-	float JumpPower = 0;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	class UInputMappingContext* DefaultContext;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	class UInputAction* MoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	class UInputAction* JumpAction;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	class UInputAction* LookAction;
+
+	UPROPERTY(VisibleAnywhere)
+	int64 TestSpeed;
 };

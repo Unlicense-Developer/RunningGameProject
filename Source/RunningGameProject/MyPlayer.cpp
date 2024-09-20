@@ -2,6 +2,10 @@
 
 
 #include "MyPlayer.h"
+#include "Components/CapsuleComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -9,9 +13,9 @@ AMyPlayer::AMyPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetCharacterMovement()->MaxAcceleration = 1500.0f;
+
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-	SpeedPower = 500.0f;
-	GetCharacterMovement()->JumpZVelocity = 500.0f;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
@@ -37,73 +41,104 @@ AMyPlayer::AMyPlayer()
 	{
 		GetMesh()->SetAnimInstanceClass(AnimInstance.Class);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_Default(TEXT("/Game/Input/IMC_Default.IMC_Default"));
+	if (IMC_Default.Succeeded())
+	{
+		DefaultContext = IMC_Default.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOVE(TEXT("/Game/Input/Actions/IA_Move.IA_Move"));
+	if (IA_MOVE.Succeeded())
+	{
+		MoveAction = IA_MOVE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_JUMP(TEXT("/Game/Input/Actions/IA_Jump.IA_Jump"));
+	if (IA_JUMP.Succeeded())
+	{
+		JumpAction = IA_JUMP.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_LOOK(TEXT("/Game/Input/Actions/IA_Look.IA_Look"));
+	if (IA_LOOK.Succeeded())
+	{
+		LookAction = IA_LOOK.Object;
+	}
+
+	//GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic
 }
 
 // Called when the game starts or when spawned
 void AMyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			SubSystem->AddMappingContext(DefaultContext, 0);
+	}
 }
 
 // Called every frame
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Move(DeltaTime);
-	CameraRotate();
+
+	TestSpeed = GetCharacterMovement()->Velocity.X;
 }
 
-// Called to bind functionality to input
 void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	InputComponent->BindAction("Jump", IE_Pressed, this, &AMyPlayer::Jump);
-
-	InputComponent->BindAxis("MoveX", this, &AMyPlayer::SetVelocityX);
-	InputComponent->BindAxis("MoveY", this, &AMyPlayer::SetVelocityY);
-	InputComponent->BindAxis("CameraPitch", this, &AMyPlayer::SetCameraPitch);
-	InputComponent->BindAxis("CameraYaw", this, &AMyPlayer::SetCameraYaw);
-}
-
-void AMyPlayer::Move(float DeltaTime)
-{
-	AddActorWorldOffset(CurVelocity * DeltaTime);
-}
-
-void AMyPlayer::CameraRotate()
-{
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		FRotator NewRotation = GetActorRotation();
-		NewRotation.Yaw += CameraInputValue.X;
-		SetActorRotation(NewRotation);
-	}
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyPlayer::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMyPlayer::StopJumping);
 
-	{
-		FRotator NewRotation = SpringArmComponent->GetComponentRotation();
-		NewRotation.Pitch = NewRotation.Pitch + CameraInputValue.Y;
-		NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + CameraInputValue.Y, -80.0f, -15.0f);
-		SpringArmComponent->SetWorldRotation(NewRotation);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayer::Look);
+
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayer::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyPlayer::StopMove);
 	}
 }
 
-void AMyPlayer::SetVelocityX(float AxisValue)
+void AMyPlayer::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	CurVelocity.X = FMath::Clamp(AxisValue, -1.0f, 1.0f) * SpeedPower;
+	FVector ImpulseDirection = RootComponent->GetComponentLocation() - Hit.ImpactPoint;
+	GetCapsuleComponent()->AddImpulse(ImpulseDirection);
 }
 
-void AMyPlayer::SetVelocityY(float AxisValue)
+void AMyPlayer::Hit()
 {
-	CurVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * SpeedPower;
+	GetCharacterMovement()->AddImpulse(FVector(0.0f, 0.0f, 0.0f));
 }
 
-void AMyPlayer::SetCameraPitch(float AxisValue)
+void AMyPlayer::Look(const FInputActionValue& Value)
 {
-	CameraInputValue.Y = AxisValue;
+	AddControllerYawInput(Value.Get<FVector2D>().X);
+
+	FRotator NewRotation = SpringArmComponent->GetComponentRotation();
+	NewRotation.Pitch += -Value.Get<FVector2D>().Y;
+	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, -80.0f, 10.0f);
+	SpringArmComponent->SetWorldRotation(NewRotation);
 }
 
-void AMyPlayer::SetCameraYaw(float AxisValue)
+void AMyPlayer::Move(const FInputActionValue& Value)
 {
-	CameraInputValue.X = AxisValue;
+	AddMovementInput(RootComponent->GetForwardVector(), Value.Get<FVector2D>().Y);
+	AddMovementInput(RootComponent->GetRightVector(), Value.Get<FVector2D>().X);
+}
+
+void AMyPlayer::StopMove()
+{
+	GetCharacterMovement()->StopMovementImmediately();
+}
+
+void AMyPlayer::NotifyActorBeginOverlap(AActor* Other)
+{
 }
 

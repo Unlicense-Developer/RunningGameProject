@@ -23,7 +23,7 @@ void ARunningGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
 
     if (NewWidgetClass != nullptr)
     {
-        CurWidget = CreateWidget(GetWorld(), NewWidgetClass);
+        //CurWidget = CreateWidget(GetWorld(), NewWidgetClass);
 
         if (CurWidget != nullptr)
         {
