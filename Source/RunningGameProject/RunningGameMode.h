@@ -20,14 +20,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UMG")
 	void ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass);
 
-	UFUNCTION(BlueprintCallable, Category = "UMG")
-	void StartGame();
-
 protected:
 	virtual void BeginPlay() override;
-
-public:
-	virtual void StartPlay() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UMG")

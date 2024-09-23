@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseActor.h"
+#include "Components/AudioComponent.h"
 #include "Cola.generated.h"
 
 /**
@@ -24,4 +25,7 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UPROPERTY(EditAnywhere)
+	UAudioComponent* AudioComponent;
 };

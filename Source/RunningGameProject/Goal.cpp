@@ -2,6 +2,8 @@
 
 
 #include "Goal.h"
+#include "RunningGameState.h"
+#include "MyPlayer.h"
 
 // Sets default values
 AGoal::AGoal()
@@ -36,7 +38,10 @@ void AGoal::BeginPlay()
 
 void AGoal::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Notify Actor Begin Overlap... Other Actor Name: %s"), *OtherActor->GetName()));
+	if (Cast<AMyPlayer>(OtherActor))
+	{
+		Cast<ARunningGameState>(GetWorld()->GetGameState())->EndGame();
+	}
 }
 
 // Called every frame

@@ -11,7 +11,7 @@ AMovingFloor::AMovingFloor()
 void AMovingFloor::BeginPlay()
 {
 	Super::BeginPlay();
-	InitialPosition = GetActorLocation();
+	InitialLocation = GetActorLocation();
 	SpeedPower = FMath::RandRange(5.0f, 10.0f);
 	MoveRange = FMath::RandRange(400.0f, 700.0f);
 }
@@ -41,11 +41,11 @@ void AMovingFloor::MoveLeftRight()
 		AddActorWorldOffset(FVector(0.0f, -SpeedPower, 0.0f));
 	}
 
-	if (GetActorLocation().Y >= InitialPosition.Y + MoveRange)
+	if (GetActorLocation().Y >= InitialLocation.Y + MoveRange)
 	{
 		IsReverseDirection = false;
 	}
-	else if (GetActorLocation().Y <= InitialPosition.Y - MoveRange)
+	else if (GetActorLocation().Y <= InitialLocation.Y - MoveRange)
 	{
 		IsReverseDirection = true;
 	}
@@ -62,11 +62,11 @@ void AMovingFloor::MoveUpDown()
 		AddActorWorldOffset(FVector(0.0f, 0.0f, -SpeedPower));
 	}
 
-	if (GetActorLocation().Z >= InitialPosition.Z + MoveRange)
+	if (GetActorLocation().Z >= InitialLocation.Z + MoveRange)
 	{
 		IsReverseDirection = false;
 	}
-	else if (GetActorLocation().Z <= InitialPosition.Z - MoveRange)
+	else if (GetActorLocation().Z <= InitialLocation.Z - MoveRange)
 	{
 		IsReverseDirection = true;
 	}

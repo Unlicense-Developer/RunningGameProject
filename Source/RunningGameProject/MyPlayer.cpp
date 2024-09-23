@@ -2,7 +2,9 @@
 
 
 #include "MyPlayer.h"
+#include "WindmillTrab.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -66,7 +68,7 @@ AMyPlayer::AMyPlayer()
 		LookAction = IA_LOOK.Object;
 	}
 
-	//GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMyPlayer::OnCapsuleBeginOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -108,8 +110,11 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMyPlayer::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	FVector ImpulseDirection = RootComponent->GetComponentLocation() - Hit.ImpactPoint;
-	GetCapsuleComponent()->AddImpulse(ImpulseDirection);
+	if (Cast<AWindmillTrab>(OtherActor))
+	{
+		FVector ImpulseDirection = RootComponent->GetComponentLocation() - Hit.ImpactPoint;
+		GetCapsuleComponent()->AddImpulse(ImpulseDirection);
+	}
 }
 
 void AMyPlayer::Hit()
@@ -125,12 +130,13 @@ void AMyPlayer::Look(const FInputActionValue& Value)
 	NewRotation.Pitch += -Value.Get<FVector2D>().Y;
 	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, -80.0f, 10.0f);
 	SpringArmComponent->SetWorldRotation(NewRotation);
+	
 }
 
 void AMyPlayer::Move(const FInputActionValue& Value)
 {
 	AddMovementInput(RootComponent->GetForwardVector(), Value.Get<FVector2D>().Y);
-	AddMovementInput(RootComponent->GetRightVector(), Value.Get<FVector2D>().X);
+	//AddMovementInput(RootComponent->GetRightVector(), Value.Get<FVector2D>().X);
 }
 
 void AMyPlayer::StopMove()

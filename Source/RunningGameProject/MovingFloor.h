@@ -35,7 +35,7 @@ public:
 	EMovetype MoveType = EMovetype::E_LeftRight;
 
 	UPROPERTY(VisibleAnywhere)
-	FVector InitialPosition;
+	FVector InitialLocation;
 
 	UPROPERTY(EditAnywhere)
 	float SpeedPower;

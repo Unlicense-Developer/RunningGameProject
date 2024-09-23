@@ -1,6 +1,7 @@
 #include "RunningGameMode.h"
 #include "MyPlayer.h"
 #include "MyPlayerController.h"
+#include "RunningGameState.h"
 #include "BGMManager.h"
 
 ARunningGameMode::ARunningGameMode()
@@ -9,6 +10,8 @@ ARunningGameMode::ARunningGameMode()
     DefaultPawnClass = MyPlayerClass.Class;
     static ConstructorHelpers::FClassFinder<AMyPlayerController> MyPlayerControllerClass(TEXT("/Script/RunningGameProject.MyPlayerController"));
     PlayerControllerClass = MyPlayerControllerClass.Class;
+    static ConstructorHelpers::FClassFinder<ARunningGameState> MyGameStateClass(TEXT("/Script/RunningGameProject.RunningGameState"));
+    GameStateClass = MyGameStateClass.Class;
     static ConstructorHelpers::FClassFinder<UUserWidget> UserWidgetClass(TEXT("/Game/BP_PlayerWidget"));
     StartingWidgetClass = UserWidgetClass.Class;
 }
@@ -23,7 +26,7 @@ void ARunningGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
 
     if (NewWidgetClass != nullptr)
     {
-        //CurWidget = CreateWidget(GetWorld(), NewWidgetClass);
+        CurWidget = CreateWidget(GetWorld(), NewWidgetClass);
 
         if (CurWidget != nullptr)
         {
@@ -32,22 +35,10 @@ void ARunningGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
     }
 }
 
-void ARunningGameMode::StartGame()
-{
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Start Game")));
-    UGameplayStatics::OpenLevel(this, FName(TEXT("TestLevel")));
-}
-
 void ARunningGameMode::BeginPlay()
 {
     Super::BeginPlay();
     ChangeMenuWidget(StartingWidgetClass);
 
     GetWorld()->SpawnActor<ABGMManager>();
-}
-
-void ARunningGameMode::StartPlay()
-{
-    Super::StartPlay();
-
 }

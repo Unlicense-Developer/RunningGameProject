@@ -2,6 +2,7 @@
 
 
 #include "Cola.h"
+#include "RunningGameState.h"
 
 ACola::ACola()
 {
@@ -15,11 +16,22 @@ ACola::ACola()
 		StaticMesh->SetStaticMesh(MeshAsset.Object);
 		StaticMesh->SetCollisionProfileName(TEXT("OverlapAll"));
 	}
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
+	AudioComponent->SetupAttachment(RootComponent);
+	static ConstructorHelpers::FObjectFinder<USoundBase> SoundAsset(TEXT("/Game/Sounds/ItemGet.ItemGet"));
+	AudioComponent->SetSound(SoundAsset.Object);
 }
 
 void ACola::NotifyActorBeginOverlap(AActor* Other)
 {
-	Destroy();
+	AGameStateBase* CurGameState = GetWorld()->GetGameState();
+	if (Cast<ARunningGameState>(CurGameState))
+	{
+		Cast<ARunningGameState>(CurGameState)->AddScore();
+		AudioComponent->Play();
+		Destroy();
+	}
 }
 
 void ACola::Rotate()
